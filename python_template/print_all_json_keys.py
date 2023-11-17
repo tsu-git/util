@@ -20,9 +20,14 @@ def show_all_keys(input_dict: dict, indent_depth: int = 0) -> bool:
 
         d = input_dict[k]
 
-        if type(d) is str:
+        if type(d) is not list and type(d) is not dict:
             # end point of this branch
             continue
+
+        elif type(d) is dict:
+            each_indent += 1
+            show_all_keys(d, each_indent)
+            each_indent -= 1
 
         elif type(d) is list:
             print('{0}## list items >>'.format(ind))
@@ -32,9 +37,6 @@ def show_all_keys(input_dict: dict, indent_depth: int = 0) -> bool:
             for c in d:
                 c_keys = { x for x in sorted(c.keys()) }
 
-                #print(f"previous: {prev_c_keys}")
-                #print(f"current: {c_keys}")
-
                 if len(prev_c_keys) < 1 or len(c_keys ^ prev_c_keys) > 0:
                     duplicate_elem_num = 1
                     prev_c_keys = c_keys
@@ -43,20 +45,17 @@ def show_all_keys(input_dict: dict, indent_depth: int = 0) -> bool:
                     # both sets have same keys
                     prev_c_keys = c_keys
                     duplicate_elem_num += 1
-                    #print(f"same keys. duplicate number[{duplicate_elem_num}]")
                     continue
 
 
             if duplicate_elem_num > 1:
-                print(f"{ind}>> duplicate elements [{duplicate_elem_num}]")
+                print(f"{ind}>> iterated elements [{duplicate_elem_num}]")
 
             each_indent -= 1
 
         else:
-            each_indent += 1
-            show_all_keys(d, each_indent)
+            print(f"invalid type of data [{d}]")
 
-        each_indent -= 1
 
     return(True)
 
@@ -71,11 +70,25 @@ if __name__ == "__main__":
         description = 'Read each line from a input file')
     parser.add_argument('infile', nargs=1, type=argparse.FileType("r"),
                         help='an input file to read')
+    parser.add_argument('-k', '--key', type=str,
+                        help='extract keys below the given key '
+                            'in the data. use comma to seperate words '
+                            'when you need to set multiple keys.' )
 
     args = parser.parse_args()
 
+    if args.key:
+        keywords = list(args.key.strip().split(","))
+
     f = args.infile[0]
     d = json.load(f)
+
+    if args.key:
+        for i_key in keywords:
+            if i_key not in d:
+                print(f"{i_key} is not in the dictionary")
+                sys.exit()
+            d = d[i_key]
 
     ret = show_all_keys(d)
     if not ret:

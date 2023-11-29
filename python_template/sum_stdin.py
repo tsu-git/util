@@ -21,11 +21,18 @@ if __name__ == "__main__":
             index = IDX_VALUE_ONLY
 
         value = "".join(line[index:])
-        if value.isdecimal():
+        if matched := re.search('^[-+]?[\d]+$', value):
             try:
                 num = int(value)
             except ValueError:
                 print(f"failed to convert to int. [{value}]",
+                    file=sys.stderr)
+                sys.exit(False)
+        elif matched := re.search('^[-+]?[\d.]+$', value):
+            try:
+                num = float(value)
+            except ValueError:
+                print(f"failed to convert to float. [{value}]",
                     file=sys.stderr)
                 sys.exit(False)
         elif matched := re.search('^[\+\- ]*\d+[\+\- ]+\d+', value):

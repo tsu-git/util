@@ -1,7 +1,8 @@
 #!/usr/bin/python
 """Convert character encoding
 
-    convert caracter encoding of input file to specific encoding
+    convert caracter encoding of input file to specific encoding.
+    This tool doesn't modify the input file.
 """
 
 if __name__ == "__main__":

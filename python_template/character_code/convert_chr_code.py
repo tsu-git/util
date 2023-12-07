@@ -41,6 +41,7 @@ if __name__ == "__main__":
     with open(out_file, mode='w', encoding=O_CODEC) as out_f:
         with open(in_file, 'r', encoding=I_CODEC) as in_f:
             for line in in_f:
+                logging.debug(f'input [{line}]')
                 out_f.write(line)
 
 

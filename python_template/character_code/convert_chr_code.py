@@ -16,11 +16,11 @@ if __name__ == "__main__":
 
     parser.add_argument('in_file', help='an input file to convert from')
     parser.add_argument('-i', '--input_codec', default='utf-8',
-                        choices=['utf-8', 'shift_jis', 'euc_jp', 
-                        'iso2022_jp', 'unicode_escape'])
+                        choices=['utf_8', 'utf_16_le', 'shift_jis',
+                        'euc_jp', 'iso2022_jp', 'unicode_escape'])
     parser.add_argument('-o', '--output_codec', default='utf-8',
-                        choices=['utf-8', 'shift_jis', 'euc_jp',
-                        'iso2022_jp', 'unicode_escape'])
+                        choices=['utf_8', 'utf_16_le', 'shift_jis',
+                        'euc_jp', 'iso2022_jp', 'unicode_escape'])
     parser.add_argument('-d', '--debug', action='store_true',
                         help='print debug log')
     args = parser.parse_args()

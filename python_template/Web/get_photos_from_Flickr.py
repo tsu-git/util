@@ -8,7 +8,6 @@ from selenium.webdriver import Chrome
 from selenium.webdriver.common.by import By
 import time, sys, argparse, os, logging
 
-DOWNLOAD_DIR_NAME = 'Flickr'
 TIME_PAGE_LOAD = 3
 TIME_DOWNLOAD = 7
 LOG_FMT = ' %(asctime)s: %(levelname)s: %(message)s'
@@ -24,10 +23,6 @@ url = HOST_URL + '/search/?text='
 logging.debug(f"search key word[s]: {sys.argv[1:]}")
 browser.get(url + ' '.join(sys.argv[1:]))
 #browser.get(url + 'duck baby')
-
-# make a download directory
-#   make a directory only when it doesn't exist
-os.makedirs(DOWNLOAD_DIR_NAME, exist_ok=True)
 
 class_name = 'view.photo-list-photo-view.awake'
 try:

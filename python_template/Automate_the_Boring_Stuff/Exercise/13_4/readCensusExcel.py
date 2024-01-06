@@ -11,7 +11,7 @@ wb = openpyxl.load_workbook('/root/work/censuspopdata.xlsx')
 sheet = wb['Population by Census Tract']
 county_data = {}
 
-# TODO: county_dataに郡の人口と地域数を格納する。
+# county_dataに郡の人口と地域数を格納する。
 print('行を読み込んでいます...')
 for row in range(2, sheet.max_row + 1):
     # スプレッドシートの1行に、1つの人口調査標準地域のデータがある。
@@ -30,7 +30,7 @@ for row in range(2, sheet.max_row + 1):
     county_data[state][county]['pop'] += int(pop)
 
 
-# TODO: 新しいテキストファイルを開き、county_dataの内容を書き込む。
+# county_dataの内容を書き込む。
 print('結果を書き込み中')
 result_file = open('census2010.py', 'w')
 result_file.write('all_data = ' + pprint.pformat(county_data))

@@ -47,12 +47,12 @@ total_amount += menu_sause_and_vegi[response]
 print(f'  {response:10}{menu_sause_and_vegi[response]:7}円')
 print(f'  {total_title:10}{total_amount:7,}円')
 
-# TODO: サンドイッチがいくつ必要か。数字は1以上。
+# サンドイッチがいくつ必要か。数字は1以上。
 response = pyip.inputNum(prompt='このサンドイッチをいくつ作りますか？ ',
                          min=1, max=10)
 total_amount += total_amount * response
 
-# TODO: 合計金額表示する
+# 合計金額表示する
 print(f'  {total_title:10}{total_amount:7,}円')
 
 sys.exit()

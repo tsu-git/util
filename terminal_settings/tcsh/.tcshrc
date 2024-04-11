@@ -1,0 +1,70 @@
+set path=($path ~/mybin ~/source/repos/python_template)
+
+if ($?prompt) then
+complete man 'p/*/c/'
+complete set 'p/1/s/'
+complete setenv 'p/1/e'
+complete env 'p/1/e' 'p/2/c/'
+complete printenv 'p/1/e/'
+complete cd 'p/1/d/'
+complete pushd 'p/*/d/'
+complete uniq 'c/-/(c d f s u)/'
+complete sort 'c/-/(d f i M n r b t k)/'
+#complete ssh 'p/1/$dev_hosts/'
+complete telnet 'p/1/$dev_hosts/'
+complete ftp 'p/1/$dev_hosts/'
+complete ncftp 'p/1/$dev_hosts/'
+complete cp 'p/*/f/' 'p/*/e/'
+complete mv 'p/*/f/' 'p/*/e/'
+complete find 'c/-/(type size name ctime mtime atime perm exec ok user group follow)/' 'n/-type/(b c d D f l p s)/' 'n/-user/u/' 'n/-ok/c/' 'n/-perm/(- 1 2 4 10 20 40 100 200 400)/' 'n/-user/u/' 'n/-group/g/' 'p/1/d/'
+complete ln 'c/-/(s r L)/' 'p/*/d/'
+alias sjis_sort 'env LC_ALL=C sort'
+alias sjis_uniq 'env LC_ALL=C uniq'
+alias sjis_grep 'env LANG=ja_JP.sjis grep'
+alias explorer 'cygstart explorer'
+alias vi 'vim'
+alias view 'vim -R'
+alias cp 'cp -i'
+alias rm 'rm -i'
+alias bc 'bc -q ~/.bcenv'
+alias dirs 'dirs -v'
+alias less 'less -x4'
+alias h 'history 5'
+alias hi 'history 10'
+alias his 'history 20'
+alias hist 'history | less'
+alias last 'last \!* | head'
+alias ls 'ls -F --color=auto --show-control-char'
+alias rxvts 'rxvt -km sjis -fn msgothic-12 -fm msgothic-12 -e bash --login -i'
+#alias telnet 'cocot -t SJIS,UTF-8 telnet'
+#alias ssh 'cocot -t SJIS,UTF-8 ssh'
+#alias ncftp 'cocot -p UTF-8 ncftp'
+bindkey -v
+set autolist=ambiguous
+set autologout=3600
+set color
+set colorcat
+set complete=enhance
+set prompt="\n%B%m %n[\!]%b %~ \n%% "
+set correct=cmd
+set noclobber
+set notify
+set filec
+set noclobber
+
+# Let python webbrowser module open an URL
+setenv BROWSER cygstart
+
+#setenv LANG ja_JP.SJIS
+setenv LANG ja_JP.utf-8
+#set dspmbyte=sjis
+set dspmbyte=utf-8
+setenv SHELL /bin/tcsh
+#setenv LESSCHARSET japanese-sjis
+setenv LESSCHARSET utf-8
+setenv NLSPATH /usr/share/locale/%L/%N
+setenv BC_ENV_ARGS '-q /c/Users/tsusu/.bcenv'
+setenv EDITOR 'vim'
+setenv LS_COLORS "*.o=35":"*.a=33":"*.scr=31":"cd=01;32"
+umask 022
+endif

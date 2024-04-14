@@ -15,7 +15,15 @@ file = sys.argv[1]
 print(f"extract from {file}")
 
 # ダウンロードファイルを開く
-with open(file, "r") as f:
+"""
+   OSがWindowsかつ日本語環境の場合、ロケールのpreferredencodingが標準で
+   cp932であるため、ファイルオープン時にencoding指定をしないとcodecが
+   エラーとなる。
+   - この件についてBeautifulSoupのオブジェクト作成時はencoding不要
+   - OSのロケールをUTF8に変えてしまえば良いが、レガシーアプリで不具合
+"""
+enc = "utf-8"
+with open(file, "r", encoding=enc) as f:
     # ダウンロードファイルを解析 
     soup = BeautifulSoup(f, "html.parser")
 

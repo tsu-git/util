@@ -1,0 +1,50 @@
+# PowerShellスクリプトを実行可能にする設定
+
+    Powershellスクリプトを実行しようとすると、標準では次のエラーとなる。
+    セキュリティのため、スクリプトの実行を許可しない設定となっている。後述の
+    手順でスクリプトの実行を許可するように変更する。この設定は一度だけ実行
+    すればそのあと必要になることはない。
+
+    例
+        > .\something.ps1
+        .\something.ps1 : File
+        something.ps1 cannot be loaded
+        because running scripts is disabled on this system. For more information, see
+        about_Execution_Policies at https:/go.microsoft.com/fwlink/?LinkID=135170.
+        At line:1 char:1
+        + .\something.ps1
+        + ~~~~~~~~~~~~~~~~~~
+            + CategoryInfo          : SecurityError: (:) [], PSSecurityException
+                + FullyQualifiedErrorId : UnauthorizedAccess
+
+    なお、この設定変更後はスクリプトを実行するコンソールは再起動すること。
+
+
+設定変更方法
+    1. 管理者権限でPowerShellコンソールを起動する
+        PowerShellアイコンを右クリック -> 管理者として起動
+
+    2. 現在の設定を確認する
+        Restrictedなので、スクリプトの実行を許容しない。
+        > Get-ExecutionPolicy
+            Restricted
+
+    3. 実行権限をRemoteSignedに変更する
+        > Set-ExecutionPolicy RemoteSigned
+
+        Execution Policy Change
+        The execution policy helps protect you from scripts that you do not trust.
+        Changing the execution policy might expose you to the security risks described
+        in the about_Execution_Policies help topic at
+        https:/go.microsoft.com/fwlink/?LinkID=135170. Do you want to change the
+        execution policy?
+        [Y] Yes  [A] Yes to All  [N] No  [L] No to All  [S] Suspend  [?] Help
+        (default is "N"):Y
+
+    4. 1のコマンドを再度実行してRemoteSignedに変更されたことを確認する
+        > Get-ExecutionPolicy
+        RemoteSigned
+
+
+参考
+    https://learn.microsoft.com/ja-jp/powershell/module/microsoft.powershell.core/about/about_execution_policies?view=powershell-7.4

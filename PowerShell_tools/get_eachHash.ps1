@@ -16,7 +16,9 @@ Param([parameter(Mandatory=$true)][String]$dir,
       [parameter(Mandatory=$false)][String]$outfile)
 
 # 調査対象ディレクトリチェック
+$my_name = $Myinvocation.MyCommand.Name
 if ($false -eq (Test-Path $dir -PathType container)) {
+    echo "Usage: ${my_name} directory [outfile]"
     echo "${dir} is not found"
     exit
 }
@@ -55,5 +57,5 @@ foreach ($file in $fileList) {
 # 元のディレクトリに戻る
 popd
 
-echo "finished to output file hashes: "
+echo "$my_name finished to output file hashes: "
 echo ${o_fileItem}.FullName

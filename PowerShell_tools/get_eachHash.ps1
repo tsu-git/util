@@ -2,12 +2,14 @@
 #   指定のディレクトリ配下のファイルからハッシュ値を取得する
 #
 #   使い方：
-#       get_eachHash.ps1 directory 
+#       get_eachHash.ps1 directory [outfile]
 #
 #           directory   ディレクトリを指定する。配下のファイルから
 #                       ハッシュ値を取得する。
-#           outfile     一覧の出力先ファイルを指定する。指定をしない場合
-#                       ツール配置ディレクトリ配下に次の名前で出力する。
+#                       
+#           outfile     省略可。一覧の出力先ファイルを指定する。
+#                       指定をしない場合、ツール配置ディレクトリ配下に次の
+#                       名前で出力する。
 #                       hash_list_YYYYMMDD_hh24miss.txt
 #
 

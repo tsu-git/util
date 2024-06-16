@@ -12,6 +12,7 @@ import openpyxl
 import re
 
 
+# ファイル名の形式チェック関数
 def examine_filename_format(filename: str) -> bool:
     if (matched := re.search(r'^[WM][LG][1-3][23]-', filename)):
         return(True)
@@ -19,6 +20,7 @@ def examine_filename_format(filename: str) -> bool:
         return(False)
 
 
+# 使用量、計器数の判定関数
 def find_out_usage_and_meter(filename: str) -> str:
     kind = ""
 
@@ -30,6 +32,7 @@ def find_out_usage_and_meter(filename: str) -> str:
     return(kind)
 
 
+# 電圧判定関数
 def find_out_voltage(filename: str) -> str:
     kind = ""
 
@@ -42,6 +45,30 @@ def find_out_voltage(filename: str) -> str:
 
     return(kind)
 
+def find_out_column_kbn(filename: str) -> str:
+    kind = ""
+
+    if filename[:2] == "WL":
+        if filename[2] == "1":
+            kind = "1"
+        else:
+            kind = "2"
+    elif filename[:2] == "WG":
+        kind = "3"
+    elif filename[:2] == "ML":
+        if filename[2] == "1":
+            kind = "4"
+        else:
+            kind = "5"
+    elif filename[:2] == "MG":
+        if filename[2] == "1":
+            kind = "6"
+        else:
+            kind = "7"
+    else:
+        kind = "999"
+
+    return(kind)
 
 # 定数定義
 HEADER_TARGET = "No."   # ヘッダ行のいずれかの項目
@@ -108,14 +135,19 @@ for row_num in range(header_row + 1, sheet.max_row):
 
     # 使用量／計器数
     print(find_out_usage_and_meter(filename), end=" ")
+    sheet.cell(row=row_num, column=3).value = find_out_usage_and_meter(filename)
 
     # 電圧
-    print(find_out_voltage(filename))
+    print(find_out_voltage(filename), end=" ")
+    sheet.cell(row=row_num, column=4).value = find_out_voltage(filename)
 
-    # TODO: カラム区分
+    # カラム区分
+    print(find_out_column_kbn(filename))
+    sheet.cell(row=row_num, column=6).value = find_out_column_kbn(filename)
 
 
-# TODO: 納品一覧ファイルを保存
+# 納品一覧ファイルを保存
+wb.save(list_file)
 
 # 納品一覧ファイルを閉じる
 wb.close()

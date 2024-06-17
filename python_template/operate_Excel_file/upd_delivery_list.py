@@ -10,6 +10,7 @@ import sys
 from pathlib import Path
 import openpyxl
 import re
+import logging
 
 
 # ファイル名の形式チェック関数
@@ -70,6 +71,11 @@ def find_out_column_kbn(filename: str) -> str:
 
     return(kind)
 
+# ログ設定
+logging.basicConfig(level=logging.DEBUG, 
+                    format='%(asctime)s %(levelname)s: %(message)s')
+logging.debug('START upd_delivery_list')
+
 # 定数定義
 HEADER_TARGET = "No."   # ヘッダ行のいずれかの項目
 SEARCH_RANGE_ROW_MAX = 50
@@ -124,8 +130,6 @@ for row_num in range(header_row + 1, sheet.max_row):
         # csvファイル以外は無視
         continue
 
-    print(filename, end=" ")
-
     # 秘匿化前ファイルの場合はファイル名からキーワードを除去する
     if filename[0:10] == "afterhide_":
         filename = filename[10:]
@@ -134,22 +138,27 @@ for row_num in range(header_row + 1, sheet.max_row):
         continue
 
     # 使用量／計器数
-    print(find_out_usage_and_meter(filename), end=" ")
-    sheet.cell(row=row_num, column=3).value = find_out_usage_and_meter(filename)
+    sheet.cell(row=row_num, column=3).value = \
+        find_out_usage_and_meter(filename)
 
     # 電圧
-    print(find_out_voltage(filename), end=" ")
     sheet.cell(row=row_num, column=4).value = find_out_voltage(filename)
 
     # カラム区分
-    print(find_out_column_kbn(filename))
     sheet.cell(row=row_num, column=6).value = find_out_column_kbn(filename)
 
+    logging.debug(f'{filename} '\
+        f'{find_out_usage_and_meter(filename)} '\
+        f'{find_out_voltage(filename)} '\
+        f'{find_out_column_kbn(filename)}')
+        
 
 # 納品一覧ファイルを保存
 wb.save(list_file)
 
 # 納品一覧ファイルを閉じる
 wb.close()
+
+logging.debug('START upd_delivery_list')
 
 sys.exit()

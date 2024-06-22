@@ -1,7 +1,4 @@
-#!/usr/bin/python
-
-import sys
-import argparse
+import sys, argparse, time
 
 # 引数を取得する
 parser = argparse.ArgumentParser(
@@ -13,7 +10,7 @@ parser.add_argument('--year_month', default="202401")
 parser.add_argument('--date', default="1")
 args = parser.parse_args()
 
-print(f"received year_month: {args.year_month}")
-
+time.sleep(3)
+print(f"received year_month: {args.year_month} {args.date}")
 
 sys.exit()

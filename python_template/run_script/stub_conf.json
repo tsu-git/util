@@ -1,0 +1,10 @@
+{ 
+    "__comment": "ツール名はフルパスで記載する",
+    "tool_name": "/c/Users/tsusu/source/repos/python_template/run_script/stub_script.py",
+    "terms": [
+        {"year_month": "202406", "date": {"start": "1", "end": "5"}},
+        {"year_month": "202407", "date": {"start": "1", "end": "31"}},
+        {"year_month": "202408", "date": {"start": "1", "end": "31"}},
+        {"year_month": "202409", "date": {"start": "1", "end": "30"}}
+    ]
+}

@@ -4,6 +4,7 @@
 '''
 
 import sys, logging, argparse, json, subprocess
+from datetime import datetime
 from pathlib import Path
 
 # 引数処理
@@ -55,20 +56,39 @@ logging.info(f"tool: {tool}")
 # サブプロセスで使用するpython
 py = sys.executable
 
-# 設定ファイル取得
-for term in conf['terms']:
-    # スクリプト用の引数取得
-    year_month = term['year_month']
-    date_start = int(term['date']['start'])
-    date_end = int(term['date']['end'])
-    logging.info(f"year_month: {year_month} date_start: {date_start} "
-                 f"date_end: {date_end}")
+# 設定ファイルから引数取得 
+for tso_set in conf['tso_sets']:
+    tso_id = tso_set['tso_id']
+    voltage = tso_set['voltage']
+    for term in tso_set['terms']:
+        # スクリプト用の引数取得
+        year = term['year']
+        month_start = int(term['month']['start'])
+        month_end = int(term['month']['end'])
+        date_start = int(term['date']['start'])
+        date_end = int(term['date']['end'])
 
-    # TODO: スクリプト実行
-    for date in range(date_start, date_end+1):
-        logging.info(f"{year_month} {date}")
-        proc = subprocess.Popen([py, tool, f'--year_month={year_month}', \
-                                f'--date={date}'])
-        proc.wait()
+        logging.info(f"tso_id: {tso_id}, year: {year}, "
+                     f"month_start: {month_start}, month_end: {month_end}, "
+                     f"date_start: {date_start}, date_end: {date_end}, "
+                     f"voltage: {voltage}")
+
+        # TODO: スクリプト実行
+        for month in range(month_start, month_end+1):
+            for date in range(date_start, date_end+1):
+                ymd = f"{year}{month:02}{date:02}"
+                try:
+                    datetime.strptime(ymd, "%Y%m%d")
+                except ValueError:
+                    logging.info(f"failed to convert: {ymd}")
+                    break
+                year_month = f"{year}{month:02}"
+                logging.info(f"{tso_id} {year_month} {date} {voltage}")
+                proc = subprocess.Popen([py, tool, \
+                                        f'--tso_id={tso_id}', \
+                                        f'--year_month={year_month}', \
+                                        f'--date={date}', \
+                                        f'--voltage={voltage}'])
+                proc.wait()
 
 sys.exit()

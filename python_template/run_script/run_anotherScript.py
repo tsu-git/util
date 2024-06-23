@@ -7,6 +7,20 @@ import sys, logging, argparse, json, subprocess
 from datetime import datetime
 from pathlib import Path
 
+def make_datetime_str():
+    dt = datetime.now()
+    datetime_str = f"{dt.year}{dt.month}{dt.day}{dt.hour}{dt.minute}" + \
+                   f"{dt.second}"
+
+    return(datetime_str)
+
+def run_script(args_list):
+    for args in args_list:
+        proc = subprocess.Popen(args)
+        proc.wait()
+
+    return()
+
 # 引数処理
 #   設定ファイル取得
 parser = argparse.ArgumentParser(
@@ -19,15 +33,14 @@ parser.add_argument('-c', '--conf', required=True, \
 args = parser.parse_args()
 
 # ログ初期処理
-#   ログファイル名生成（時分秒付き）
 if args.debug == True:
     log_level = logging.DEBUG
 else:
     log_level = logging.INFO
 
-print(log_level)
-
+log_filename = Path(sys.argv[0]).stem + "_" + make_datetime_str() + ".log"
 logging.basicConfig(level=log_level,
+                    filename=log_filename,
                     format="%(asctime)s %(levelname)s: %(message)s")
 
 logging.info(f"START {sys.argv[0]}")
@@ -49,7 +62,7 @@ logging.debug(f"contents of the conf_file: \n{conf}")
 tool_name = conf['tool_name']
 tool = Path(tool_name)
 if tool.is_file() != True:
-    logging.info(f"{tool} isn't a file")
+    logging.info(f"[{tool}] isn't a file")
     sys.exit()
 logging.info(f"tool: {tool}")
 
@@ -57,6 +70,8 @@ logging.info(f"tool: {tool}")
 py = sys.executable
 
 # 設定ファイルから引数取得 
+#   引数リストを生成する
+args_list = []
 for tso_set in conf['tso_sets']:
     tso_id = tso_set['tso_id']
     voltage = tso_set['voltage']
@@ -73,7 +88,7 @@ for tso_set in conf['tso_sets']:
                      f"date_start: {date_start}, date_end: {date_end}, "
                      f"voltage: {voltage}")
 
-        # TODO: スクリプト実行
+        # スクリプト実行
         for month in range(month_start, month_end+1):
             for date in range(date_start, date_end+1):
                 ymd = f"{year}{month:02}{date:02}"
@@ -84,11 +99,14 @@ for tso_set in conf['tso_sets']:
                     break
                 year_month = f"{year}{month:02}"
                 logging.info(f"{tso_id} {year_month} {date} {voltage}")
-                proc = subprocess.Popen([py, tool, \
-                                        f'--tso_id={tso_id}', \
-                                        f'--year_month={year_month}', \
-                                        f'--date={date}', \
-                                        f'--voltage={voltage}'])
-                proc.wait()
+                args_list.append([py, tool, \
+                                 f'--tso_id={tso_id}', \
+                                 f'--year_month={year_month}', \
+                                 f'--date={date}', \
+                                 f'--voltage={voltage}'])
+
+
+# 引数リストを使って外部スクリプトを実行する
+run_script(args_list)
 
 sys.exit()

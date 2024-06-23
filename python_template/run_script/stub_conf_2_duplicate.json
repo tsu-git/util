@@ -1,0 +1,24 @@
+{ 
+    "__comment": "ツール名はフルパスで記載する",
+    "tool_name": "/c/Users/tsusu/source/repos/python_template/run_script/stub_script.py",
+    "tso_sets": [
+        { 
+            "tso_id": "10011",
+            "terms": [
+                { 
+                    "year": "2022",
+                    "month": {"start": "9", "end": "09"},
+                    "date": {"start": "29", "end": "31"} }, 
+                { 
+                    "year": "2022",
+                    "month": {"start": "9", "end": "09"},
+                    "date": {"start": "29", "end": "31"} }, 
+                { 
+                    "year": "2022",
+                    "month": {"start": "10", "end": "12"},
+                    "date": {"start": "1", "end": "31"} } 
+            ],
+            "voltage": "1"
+        }
+    ]
+}

@@ -70,13 +70,19 @@ if __name__ == "__main__":
     # 設定ファイル検査
     conf_file = Path(args.conf)
     if conf_file.is_file() != True:
+        print(f"{args.conf} isn't a file")
         logging.info(f"{args.conf} isn't a file")
         sys.exit()
 
     # 設定ファイル読込
     logging.info(f"loading the configuration file: {conf_file}")
     with open(conf_file, "r") as conf_fp:
-        conf = json.load(conf_fp)
+        try:
+            conf = json.load(conf_fp)
+        except json.decoder.JSONDecodeError:
+            print(f"{args.conf} contains invalid json format")
+            logging.info(f"{args.conf} contains invalid json format")
+            sys.exit()
 
     logging.debug(f"contents of the conf_file: \n{conf}")
 

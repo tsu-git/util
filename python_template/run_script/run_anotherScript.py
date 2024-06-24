@@ -11,7 +11,7 @@ def connect_elements(args: list)-> str:
     connected_str = ""
     for elem in args:
         connected_str += f"{elem}"
-
+    
     return(connected_str)
 
 def check_valid_date(year: str, month: str, date: str)-> bool:
@@ -86,6 +86,9 @@ if __name__ == "__main__":
 
     logging.debug(f"contents of the conf_file: \n{conf}")
 
+    #   処理タイプ取得
+    process_type = conf['process_type']
+
     #   スクリプト名取得
     tool_name = conf['tool_name']
     tool = Path(tool_name)
@@ -119,7 +122,7 @@ if __name__ == "__main__":
                          f"date_start: {date_start}, date_end: {date_end}, "
                          f"voltage: {voltage}")
 
-            # スクリプト実行
+            # 引数リスト作成
             for month in range(month_start, month_end+1):
                 for date in range(date_start, date_end+1):
                     if check_valid_date(year, month, date) != True:
@@ -128,11 +131,13 @@ if __name__ == "__main__":
                         break
                     year_month = f"{year}{month:02}"
                     logging.info(f"{tso_id} {year_month} {date} {voltage}")
-                    args = [py, tool, \
-                            f'--tso_id={tso_id}', \
-                            f'--year_month={year_month}', \
-                            f'--date={date}', \
-                            f'--voltage={voltage}']
+
+                    args = [py, tool, f'--ym={year_month}']
+                    if process_type != 'sort_30min_data':
+                        # 30分値仕分け以外の場合は下記を追加
+                        args.append(f'--tso_id={tso_id}')
+                        args.append(f'--date={date}')
+                        args.append(f'--voltage={voltage}')
 
                     # コマンドの重複チェック
                     connected_elem = connect_elements(args)

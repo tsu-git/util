@@ -1,0 +1,22 @@
+{ 
+    "__comment": "ツール名はフルパスで記載する",
+    "process_type": "sort_30min_data",
+    "tool_name": "/c/Users/tsusu/source/repos/python_template/run_script/stub_script.py",
+    "tso_sets": [
+        { 
+            "tso_id": "-----",
+            "terms": [
+                { 
+                    "year": "2022",
+                    "month": {"start": "3", "end": "12"},
+                    "date": {"start": "1", "end": "1"} 
+                }, { 
+                    "year": "2023",
+                    "month": {"start": "1", "end": "3"},
+                    "date": {"start": "1", "end": "1"}
+                }
+            ],
+            "voltage": "-"
+        }
+    ]
+}

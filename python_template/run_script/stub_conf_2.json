@@ -1,10 +1,15 @@
 { 
     "__comment": "ツール名はフルパスで記載する",
+    "process_type": "make_statistics",
     "tool_name": "/c/Users/tsusu/source/repos/python_template/run_script/stub_script.py",
     "tso_sets": [
         { 
             "tso_id": "10011",
             "terms": [
+                { 
+                    "year": "2022",
+                    "month": {"start": "9", "end": "09"},
+                    "date": {"start": "29", "end": "31"} }, 
                 { 
                     "year": "2022",
                     "month": {"start": "9", "end": "09"},

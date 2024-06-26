@@ -132,12 +132,12 @@ if __name__ == "__main__":
                     year_month = f"{year}{month:02}"
                     logging.info(f"{tso_id} {year_month} {date} {voltage}")
 
-                    args = [py, tool, f'--ym={year_month}']
+                    script_args = [py, tool, f'--ym={year_month}']
                     if process_type != 'sort_30min_data':
                         # 30分値仕分け以外の場合は下記を追加
-                        args.append(f'--tso_id={tso_id}')
-                        args.append(f'--date={date}')
-                        args.append(f'--voltage={voltage}')
+                        script_args.append(f'--tso_id={tso_id}')
+                        script_args.append(f'--date={date}')
+                        script_args.append(f'--voltage={voltage}')
 
                     # コマンドの重複チェック
                     connected_elem = connect_elements(args)
@@ -148,17 +148,17 @@ if __name__ == "__main__":
                     else:
                         received_args.add(connected_elem)
 
-                    args_list.append(args)
+                    args_list.append(script_args)
 
 
     # 引数リストを使って外部スクリプトを実行する
     logging.info("start run_script")
     #run_script(args_list)
-    for args in args_list:
-        logging.info(f"running with args: {args}")
-        proc = subprocess.Popen(args)
+    for script_args in args_list:
+        logging.info(f"running with args: {script_args}")
+        proc = subprocess.Popen(script_args)
         proc.wait()
-        logging.info(f"finished running with args: {args}")
+        logging.info(f"finished running with args: {script_args}")
 
     logging.info("end run_script")
 

@@ -76,7 +76,7 @@ if __name__ == "__main__":
 
     # 設定ファイル読込
     logging.info(f"loading the configuration file: {conf_file}")
-    with open(conf_file, "r") as conf_fp:
+    with open(conf_file, "r", encoding='utf-8') as conf_fp:
         try:
             conf = json.load(conf_fp)
         except json.decoder.JSONDecodeError:

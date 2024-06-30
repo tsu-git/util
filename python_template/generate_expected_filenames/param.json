@@ -1,0 +1,6 @@
+{
+    "prefs": ["21", "22", "23"],
+    "direction": ["dem", "gen"],
+    "pressure": ["hi", "lo"],
+    "extention": [".csv"]
+}

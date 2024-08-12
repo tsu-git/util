@@ -37,6 +37,53 @@
                         4. 1へ戻る。 
 
 '''
+from pathlib import Path
+import doctest
+
+def split_file(input_file: str, size: int)-> list:
+    '''split_file()
+
+        ファイルを指定サイズに分割する。分割後のファイル名を戻り値として
+        返却する。
+
+        >>> in_file = "./in_file.csv"
+        >>> with open(in_file, "w") as f:
+        >>>     for num in range(1, 3):
+        >>>         f.write(f"line [{num:3}]\n")
+        >>>
+        >>> file_list = split_file(in_file, 10)
+        >>> print(f"{len(file_list)}")
+        10
+
+    '''
+    file_list = []
+
+    in_file_p = Path(input_file)
+
+    # 入力ファイルの存在チェック
+    if not in_file_p.is_file():
+        return(file_list)
+
+    # 入力ファイルから拡張子を除去した名前
+    path = in_file_p.parent / in_file_p.stem
+    suffix = in_file_p.suffix
+
+    # TODO: 出力ファイル名を生成する
+
+    # TODO: ファイルを分割
+    line_num
+    file_cnt = 0
+    with open(in_file_p, "r") as in_f:
+        for line in in_f:
+            if line_num <= size:
+                continue
+            else:
+                line_num = 0
+                file_cnt += 1
+                out_file_p = path / "_{file_cnt}" / suffix
+                file_list.append(out_file_p)
+
+    return(file_list)
 
 # TODO 一定以上大きいファイルを検出する
 # TODO 退避ディレクトリを作成する

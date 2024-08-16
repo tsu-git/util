@@ -42,24 +42,56 @@
 from pathlib import Path
 import doctest
 
+def create_test_csv(filename: str, num_of_lines)-> bool:
+    '''create_test_csv()
+
+        テスト用にcsvファイルを生成する
+
+        >>> ret = create_test_csv("./infile.csv", 5)
+        >>> print(ret)
+        True
+        >>> with open("./infile.csv", "r") as f:
+        ...     for line in f:
+        ...         print(line, end="")
+        ...
+        line [1]
+        line [2]
+        line [3]
+        line [4]
+        line [5]
+
+    '''
+    fp = Path(filename)
+    with open(fp, "w") as f:
+        for num in range(1, num_of_lines+1):
+            f.write(f"line [{num}]\n")
+
+    return(True)
+
 def split_file(input_file: str, size: int)-> list:
     '''split_file()
 
         ファイルを指定サイズに分割する。分割後のファイル名を戻り値として
         返却する。
 
-        >>> in_file = "./in_file.csv"
-        >>> with open(in_file, "w") as f:
-        >>>     for num in range(1, 3):
-        >>>         f.write(f"line [{num:3}]\n")
-        >>>
-        >>> file_list = split_file(in_file, 10)
-        >>> print(f"{len(file_list)}")
-        10
+        >>> in_file = "./infile.csv"
+        >>> ret = create_test_csv(in_file, 4)
+        >>> print(ret)
+        True
+        >>> file_list = split_file(in_file, 2)
+        >>> print(file_list)
+        ['infile_1.csv', 'infile_2.csv']
+
+        >>> ret = create_test_csv(in_file, 5)
+        >>> print(ret)
+        True
+        >>> file_list = split_file(in_file, 2)
+        >>> print(file_list)
+        ['infile_1.csv', 'infile_2.csv', 'infile_3.csv']
+
 
     '''
     file_list = []
-
     in_file_p = Path(input_file)
 
     # 入力ファイルの存在チェック
@@ -68,22 +100,35 @@ def split_file(input_file: str, size: int)-> list:
 
     # 入力ファイルから拡張子を除去した名前
     path = in_file_p.parent / in_file_p.stem
+
+    # 入力ファイルの拡張子
     suffix = in_file_p.suffix
 
     # TODO: 出力ファイル名を生成する
 
     # TODO: ファイルを分割
-    line_num
+    num_of_readline = 0
     file_cnt = 0
     with open(in_file_p, "r") as in_f:
         for line in in_f:
-            if line_num <= size:
-                continue
-            else:
-                line_num = 0
+            num_of_readline += 1
+
+            if num_of_readline < 2:
                 file_cnt += 1
-                out_file_p = path / "_{file_cnt}" / suffix
+                out_file_p = str(path) + f"_{file_cnt}" + suffix
                 file_list.append(out_file_p)
+                out_f = open(out_file_p, "w")
+            elif num_of_readline > size:
+                out_f.close()
+                file_cnt += 1
+                num_of_readline = 1    # 読込行数のリセット
+                out_file_p = str(path) + f"_{file_cnt}" + suffix
+                file_list.append(out_file_p)
+                out_f = open(out_file_p, "w")
+
+            out_f.write(line)
+
+    out_f.close()
 
     return(file_list)
 

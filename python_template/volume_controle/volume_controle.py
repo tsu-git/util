@@ -68,12 +68,40 @@ def create_test_csv(filename: str, num_of_lines)-> bool:
 
     return(True)
 
+def gen_split_filename(input_file: str, seq: int)-> str:
+    '''gen_split_filename
+
+        入力ファイル名から分割後ファイル名を生成する。
+
+        >>> in_file = "/tmp/somewhere/infile.csv"
+        >>> for i in range(101, 106):
+        ...     print(gen_split_filename(in_file, i))
+        ...
+        /tmp/somewhere/infile_101.csv
+        /tmp/somewhere/infile_102.csv
+        /tmp/somewhere/infile_103.csv
+        /tmp/somewhere/infile_104.csv
+        /tmp/somewhere/infile_105.csv
+
+    '''
+    p = Path(input_file)
+
+    # 入力ファイルから拡張子を除去した名前
+    path = p.parent / p.stem
+
+    # 入力ファイルの拡張子
+    suffix = p.suffix
+
+    return(str(path) + f"_{seq}" + suffix)
+
+
 def split_file(input_file: str, size: int)-> list:
     '''split_file()
 
         ファイルを指定サイズに分割する。分割後のファイル名を戻り値として
         返却する。
 
+        # 分割行数で割り切れる場合
         >>> in_file = "./infile.csv"
         >>> ret = create_test_csv(in_file, 4)
         >>> print(ret)
@@ -82,6 +110,7 @@ def split_file(input_file: str, size: int)-> list:
         >>> print(file_list)
         ['infile_1.csv', 'infile_2.csv']
 
+        # 分割行数で割り切れない場合
         >>> ret = create_test_csv(in_file, 5)
         >>> print(ret)
         True
@@ -98,15 +127,7 @@ def split_file(input_file: str, size: int)-> list:
     if not in_file_p.is_file():
         return(file_list)
 
-    # 入力ファイルから拡張子を除去した名前
-    path = in_file_p.parent / in_file_p.stem
-
-    # 入力ファイルの拡張子
-    suffix = in_file_p.suffix
-
-    # TODO: 出力ファイル名を生成する
-
-    # TODO: ファイルを分割
+    # ファイルを分割
     num_of_readline = 0
     file_cnt = 0
     with open(in_file_p, "r") as in_f:
@@ -115,16 +136,16 @@ def split_file(input_file: str, size: int)-> list:
 
             if num_of_readline < 2:
                 file_cnt += 1
-                out_file_p = str(path) + f"_{file_cnt}" + suffix
-                file_list.append(out_file_p)
-                out_f = open(out_file_p, "w")
+                # 出力ファイル名を生成する
+                file_list.append(gen_split_filename(in_file_p, file_cnt))
+                out_f = open(file_list[-1], "w")
             elif num_of_readline > size:
                 out_f.close()
                 file_cnt += 1
                 num_of_readline = 1    # 読込行数のリセット
-                out_file_p = str(path) + f"_{file_cnt}" + suffix
-                file_list.append(out_file_p)
-                out_f = open(out_file_p, "w")
+                # 出力ファイル名を生成する
+                file_list.append(gen_split_filename(in_file_p, file_cnt))
+                out_f = open(file_list[-1], "w")
 
             out_f.write(line)
 

@@ -40,7 +40,7 @@
 
 '''
 from pathlib import Path
-import doctest
+import doctest, gzip, shutil
 
 def create_test_csv(filename: str, num_of_lines)-> bool:
     '''create_test_csv()
@@ -152,6 +152,56 @@ def split_file(input_file: str, size: int)-> list:
     out_f.close()
 
     return(file_list)
+
+def to_gzip(ungzip_file: str)-> str:
+    '''to_gzip()
+
+        引数のファイルをgzip圧縮する。
+        >>> ungzip_file = "./infile.csv"
+        >>> ret = create_test_csv(ungzip_file, 5)
+        >>> print(ret)
+        True
+        >>> print(to_gzip(ungzip_file))
+        infile.csv.gz
+        
+    '''
+    p = Path(ungzip_file)
+    if not p.is_file():
+        return("")
+
+    gzip_file = str(p) + '.gz'
+    with open(p, 'rb') as f_in:
+        with gzip.open(gzip_file, 'wb') as f_out:
+            shutil.copyfileobj(f_in, f_out)
+
+    return(gzip_file)
+
+
+def un_gzip(gz_file: str):
+    '''un_gzip()
+
+        引数のgzip圧縮されたファイルを解凍する。
+
+        >>> ungzip_file = "./infile.csv"
+        >>> ret = create_test_csv(ungzip_file, 5)
+        >>> print(ret)
+        True
+        >>> gz_file = to_gzip(ungzip_file)
+        >>> print(un_gzip(gz_file))
+        infile.csv
+
+    '''
+    p = Path(gz_file)
+    if not p.is_file():
+        return("")
+
+    ungzip_file = p.parent / p.stem
+    with open(p, 'rb') as f_in:
+        with gzip.open(ungzip_file, 'wb') as f_out:
+            shutil.copyfileobj(f_in, f_out)
+
+    return(ungzip_file)
+
 
 # TODO 一定以上大きいファイルを検出する
 # TODO 退避ディレクトリを作成する

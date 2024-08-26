@@ -22,10 +22,12 @@
                 7. csvファイル一覧のファイルを一定数（多分4ファイル）ずつ
                    移動前ディレクトリにコピーする
         
-                30分電力データ仕分けツール
-                    1. 引数の年月からold_30min配下の対象ファイル名を取得し
-                       処理を行う。 
-                    2. 仕分け後のファイルを30min配下に出力する
+                   コピーの度に下記を実行する。 
+
+                    30分電力データ仕分けツール
+                        1. 引数の年月からold_30min配下の対象ファイル名を
+                           取得し処理を行う。 
+                        2. 仕分け後のファイルを30min配下に出力する
 
                 8. 移動前ディレクトリの対象年月ファイルをすべて削除
                 9. csvファイル一覧に未処理のファイルがあるか確認
@@ -202,6 +204,15 @@ def un_gzip(gz_file: str):
 
     return(ungzip_file)
 
+def move_specific_files(src: str, dst: str, yearMonth: str)-> int:
+    '''move_specific_files()
+
+        yearMonthを含む名前を持つファイルをsrcからdstに移動する。
+        >>> in_file = "./infile_.csv"
+        >>> ret = create_test_csv(in_file, 4)
+        >>> print(ret)
+        True
+    '''
 
 # TODO 一定以上大きいファイルを検出する
 # TODO 退避ディレクトリを作成する

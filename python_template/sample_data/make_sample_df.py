@@ -3,10 +3,10 @@ from random import randint, uniform, choice
 from datetime import datetime, timedelta
 
 start_dt = datetime.strptime('2024/11/3 00:00:00', '%Y/%m/%d %H:%M:%S')
-area_list = ['サンプル市', 'サンプル町', 'サンプル村']
+area_list = ['サンプル市大字', 'サンプル町大字', 'サンプル村大字']
 data = [
         {
-            'area': f'{choice(area_list)}_{i}',
+            'area': f'{choice(area_list)}',
             'datetime': f'{start_dt + timedelta(minutes=30)*i}',
             'value1': randint(5000, 6000), 
             'value2': round(uniform(200, 2500), 2)

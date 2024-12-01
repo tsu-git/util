@@ -42,7 +42,7 @@ if __name__ == "__main__":
     #unittest.main()
 
     from urllib.parse import urljoin
-    import requests, bs4, sys, logging, shutil, os, argparse
+    import requests, bs4, sys, logging, shutil, os, argparse, re
     from pathlib import Path
 
     parser = argparse.ArgumentParser(
@@ -50,6 +50,7 @@ if __name__ == "__main__":
                 description="""search link[s] on the webpage and
                             download the page[s]""")
     parser.add_argument('url')
+    parser.add_argument('-s', '--suffix', action='store')
     parser.add_argument('-d', '--debug', action='store_true')
 
     args = parser.parse_args()
@@ -94,7 +95,15 @@ if __name__ == "__main__":
         if link_url[0] == '#':  # ignore a fragment element
             continue
         absolute_link_url = urljoin(given_url, link.get('href'))
+        relative_path = link.get('href')
+        # only get content which has the suffix, when it's been given
+        if args.suffix:
+            if re.search(f".{args.suffix}$", relative_path) == None:
+                continue
+
         logging.info(f"link: [{absolute_link_url}]")
+
+        # get content of the page which the link refer
         try:
             sub_resp = requests.get(absolute_link_url)
         except Exception as exc:
@@ -103,7 +112,13 @@ if __name__ == "__main__":
             broken_links.append(absolute_link_url)
             continue
 
-        local_file = str(Path(STORAGE_DIR) / Path(gen_timestr())) + ".html"
+        # generate local path to the local file
+        if args.suffix and re.search(f".{args.suffix}$", relative_path):
+            local_file = str(Path(STORAGE_DIR) / Path(relative_path).name)
+        else:
+            local_file = str(Path(STORAGE_DIR) / Path(gen_timestr())) + ".html"
+
+        # put the content to the local file
         with open(local_file, 'wb') as page:
             for chunk in sub_resp.iter_content(100000):
                 page.write(chunk)
@@ -111,13 +126,13 @@ if __name__ == "__main__":
         logging.info(f"saved: [{local_file}]")
 
        
-    # TODO: print the broken page
+    # print the broken page
     if len(broken_links):
         print("-" * 50)
         print("couldn't save the following page[s]")
 
-    for link in broken_links:
-        print(f"broken link: {link}")
+        for link in broken_links:
+            print(f"broken link: {link}")
 
 
     sys.exit(True)

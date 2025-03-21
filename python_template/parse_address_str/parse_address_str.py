@@ -85,73 +85,73 @@ def split_address(address_str)-> dict:
         ...     # 種類使用
         ...     "高知県須崎市鍋島５－８−９　スプリングパレス２０１号"
         ... ]
-        >>> addr = split_address(address_strs[0])
-        >>> print(addr['address'])
+        >>> addr_dict = split_address(address_strs[0])
+        >>> print(addr_dict['address'])
         高知県高知市本町1-1-1
-        >>> print(addr['building'])
+        >>> print(addr_dict['building'])
         サンライズビル301号室
 
-        >>> addr = split_address(address_strs[1])
-        >>> print(addr['address'])
+        >>> addr_dict = split_address(address_strs[1])
+        >>> print(addr_dict['address'])
         高知県南国市後免町2-2-2
-        >>> print(addr['building'])
+        >>> print(addr_dict['building'])
         グリーンハイツＡ棟
 
-        >>> addr = split_address(address_strs[2])
-        >>> print(addr['address'])
+        >>> addr_dict = split_address(address_strs[2])
+        >>> print(addr_dict['address'])
         高知県四万十市中村一条3-4-5
-        >>> print(addr['building'])
+        >>> print(addr_dict['building'])
         コスモタワー1001号室
 
-        >>> addr = split_address(address_strs[3])
-        >>> print(addr['address'])
+        >>> addr_dict = split_address(address_strs[3])
+        >>> print(addr_dict['address'])
         高知県安芸市本町4-6-7
-        >>> print(addr['building'])
+        >>> print(addr_dict['building'])
         さざなみマンション502号室
 
-        >>> addr = split_address(address_strs[4])
-        >>> print(addr['address'])
+        >>> addr_dict = split_address(address_strs[4])
+        >>> print(addr_dict['address'])
         高知県須崎市鍋島5-8-9
-        >>> print(addr['building'])
+        >>> print(addr_dict['building'])
         スプリングパレス201号
 
 
             - 丁目、番地号が1つ以上ある場合に対応
 
-        >>> addr = split_address("安芸市本町4-6-7建物名Ａ")
-        >>> print(addr['address'])
+        >>> addr_dict = split_address("安芸市本町4-6-7建物名Ａ")
+        >>> print(addr_dict['address'])
         安芸市本町4-6-7
-        >>> print(addr['building'])
+        >>> print(addr_dict['building'])
         建物名Ａ
 
-        >>> addr = split_address("安芸市本町4-5建物名Ｂ")
-        >>> print(addr['address'])
+        >>> addr_dict = split_address("安芸市本町4-5建物名Ｂ")
+        >>> print(addr_dict['address'])
         安芸市本町4-5
-        >>> print(addr['building'])
+        >>> print(addr_dict['building'])
         建物名Ｂ
 
-        >>> addr = split_address("安芸市本町2建物名Ｃ")
-        >>> print(addr['address'])
+        >>> addr_dict = split_address("安芸市本町2建物名Ｃ")
+        >>> print(addr_dict['address'])
         安芸市本町2
-        >>> print(addr['building'])
+        >>> print(addr_dict['building'])
         建物名Ｃ
 
-        >>> addr = split_address("安芸市本町4-5-3")
-        >>> print(addr['address'])
+        >>> addr_dict = split_address("安芸市本町4-5-3")
+        >>> print(addr_dict['address'])
         安芸市本町4-5-3
-        >>> print(f"[{addr['building']}]")
+        >>> print(f"[{addr_dict['building']}]")
         []
 
-        >>> addr = split_address("安芸市本町3-1")
-        >>> print(addr['address'])
+        >>> addr_dict = split_address("安芸市本町3-1")
+        >>> print(addr_dict['address'])
         安芸市本町3-1
-        >>> print(f"[{addr['building']}]")
+        >>> print(f"[{addr_dict['building']}]")
         []
         
-        >>> addr = split_address("安芸市本町5")
-        >>> print(addr['address'])
+        >>> addr_dict = split_address("安芸市本町5")
+        >>> print(addr_dict['address'])
         安芸市本町5
-        >>> print(f"[{addr['building']}]")
+        >>> print(f"[{addr_dict['building']}]")
         []
         
     '''
@@ -164,6 +164,7 @@ def split_address(address_str)-> dict:
         ''', re.VERBOSE)
     match = re.match(pattern, normalize_address(address_str))
 
+    # ディクショナリ形式で返却する
     if match:
         return {
             # 住所部分
@@ -179,5 +180,31 @@ def split_address(address_str)-> dict:
         }
 
 
-def parse_chome_and_banch(address_str)-> list:
+def parse_chome_and_banchi(address_str)-> dict:
+    '''parse_chome_and_banch()
+
+        丁目番地号を分割する。
+        文字列は次の関数により処理されている前提
+            - parse_address_str()で建物名が分離されている
+
+        >>> address_without_bld_name = "安芸市本町4-6-7"
+        >>> addr_dict = parse_chome_and_banchi(address_without_bld_name)
+        >>> print(addr_dict['location_base'])
+        安芸市本町
+        >>> print(addr_dict['chome'])
+        4
+        >>> print(addr_dict['banchi'])
+        6
+        >>> print(addr_dict['gou'])
+        7
+
+    '''
+
+    address_splited = dict()
+    # TODO: 住所の各要素を分解して格納する（実装中）
+    address_splited['location_base'] = "安芸市本町"
+    address_splited['chome'] = "4"
+    address_splited['banchi'] = "6"
+    address_splited['gou'] = "7"
+
     return address_splited

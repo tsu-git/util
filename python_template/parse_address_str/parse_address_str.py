@@ -43,6 +43,7 @@ def normalize_address(address_str):
 
     # 全角ハイフン（例: "ー", "―", "−"）を半角ハイフンに変換
     # ただし、直前の文字がカタカナに該当しない場合のみ
+    # (?<!...)（否定の先読み）
     address_converted = re.sub(r'(?<![ァ-ヶ])[－ー―−]', '-', address_converted)
 
     # 全角数字を半角に変換
@@ -84,31 +85,31 @@ def split_address(address_str)-> dict:
         ...     # 種類使用
         ...     "高知県須崎市鍋島５－８−９　スプリングパレス２０１号"
         ... ]
-        >>> addr = split_address(normalize_address(address_strs[0]))
+        >>> addr = split_address(address_strs[0])
         >>> print(addr['address'])
         高知県高知市本町1-1-1
         >>> print(addr['building'])
         サンライズビル301号室
 
-        >>> addr = split_address(normalize_address(address_strs[1]))
+        >>> addr = split_address(address_strs[1])
         >>> print(addr['address'])
         高知県南国市後免町2-2-2
         >>> print(addr['building'])
         グリーンハイツＡ棟
 
-        >>> addr = split_address(normalize_address(address_strs[2]))
+        >>> addr = split_address(address_strs[2])
         >>> print(addr['address'])
         高知県四万十市中村一条3-4-5
         >>> print(addr['building'])
         コスモタワー1001号室
 
-        >>> addr = split_address(normalize_address(address_strs[3]))
+        >>> addr = split_address(address_strs[3])
         >>> print(addr['address'])
         高知県安芸市本町4-6-7
         >>> print(addr['building'])
         さざなみマンション502号室
 
-        >>> addr = split_address(normalize_address(address_strs[4]))
+        >>> addr = split_address(address_strs[4])
         >>> print(addr['address'])
         高知県須崎市鍋島5-8-9
         >>> print(addr['building'])
@@ -161,7 +162,7 @@ def split_address(address_str)-> dict:
         (.*?\d+(?:-\d+){0,2})   # 住所部分
         (.*)                    # 建物部分
         ''', re.VERBOSE)
-    match = re.match(pattern, address_str)
+    match = re.match(pattern, normalize_address(address_str))
 
     if match:
         return {
@@ -178,5 +179,5 @@ def split_address(address_str)-> dict:
         }
 
 
-def split_address_str(address_str)-> list:
+def parse_chome_and_banch(address_str)-> list:
     return address_splited

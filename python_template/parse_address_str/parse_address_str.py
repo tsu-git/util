@@ -4,6 +4,27 @@
 '''
 import re, doctest
 
+def __test_print(*strings, sep="/"):
+    '''__test_print()
+
+        doctest用の出力関数。出力が空文字の場合でも、doctestがエラーと
+        ならないように出力を[]で囲む。
+
+        >>> __test_print("高知県")
+        [高知県]
+        >>> __test_print("高知県", "高知市")
+        [高知県/高知市]
+        >>> __test_print("高知県", "高知市", sep=":")
+        [高知県:高知市]
+        >>> __test_print("高知県", "高知市", "1", "4")
+        [高知県/高知市/1/4]
+
+    '''
+    print(f"[{sep.join(strings)}]")
+
+    return
+
+
 def normalize_address(address_str):
     '''normalize_address()
 
@@ -192,15 +213,31 @@ def parse_chome_and_banchi(address_str)-> dict:
             - split_address()で建物名が分離されている
 
         >>> address_without_bld_name = "安芸市本町4-6-7"
+        >>> addr_dict = ""
         >>> addr_dict = parse_chome_and_banchi(address_without_bld_name)
-        >>> print(addr_dict['location_base'])
-        安芸市本町
-        >>> print(addr_dict['chome'])
-        4
-        >>> print(addr_dict['banchi'])
-        6
-        >>> print(addr_dict['gou'])
-        7
+        >>> __test_print(addr_dict['location_base'])
+        [安芸市本町]
+        >>> __test_print(addr_dict['chome'], addr_dict['banchi'],
+        ...             addr_dict['gou'])
+        [4/6/7]
+
+        >>> address_without_bld_name = "高知県四万十市中村一条3-4"
+        >>> addr_dict = ""
+        >>> addr_dict = parse_chome_and_banchi(address_without_bld_name)
+        >>> __test_print(addr_dict['location_base'])
+        [高知県四万十市中村一条]
+        >>> __test_print(addr_dict['chome'], addr_dict['banchi'],
+        ...             addr_dict['gou'])
+        [3/4/]
+
+        >>> address_without_bld_name = "高知県四万十市中村一条3"
+        >>> addr_dict = ""
+        >>> addr_dict = parse_chome_and_banchi(address_without_bld_name)
+        >>> __test_print(addr_dict['location_base'])
+        [高知県四万十市中村一条]
+        >>> __test_print(addr_dict['chome'], addr_dict['banchi'],
+        ...             addr_dict['gou'])
+        [3//]
 
     '''
 
@@ -209,21 +246,31 @@ def parse_chome_and_banchi(address_str)-> dict:
     # 丁目や番地号の形式にマッチする正規表現
     #   (?:...)非補足グループ：パターンでグループ化するだけで、後で参照
     #   しない。ここでは番地号のパターン（-n-n）を表す。
+    #pattern = re.compile(r'''
+    #   (.*?)                # 丁目より前（非貪欲マッチ）
+    #       (\d+?)           # 丁目
+    #       -?               # 区切り文字
+    #       (\d*?)           # 住所部分 番地号
+    #       -?               # 区切り文字
+    #       (\d*?)          # 住所部分 番地号
+    #    ''', re.VERBOSE)
     pattern = re.compile(r'''
-       (.*?)                # 丁目より前（非貪欲マッチ）
-           (\d+?)           # 丁目
-           -?               # 区切り文字
-           (\d*?)           # 住所部分 番地号
-           -?               # 区切り文字
-           (\d*?)          # 住所部分 番地号
+        (.*?)               # 住所部分 丁目より前（非貪欲マッチ）
+            (\d+            # 住所部分 丁目
+            (-\d+){0,2})    # 住所部分 番地号（あれば）
         ''', re.VERBOSE)
 
     match = re.match(pattern, address_str)
-    address_splited = dict()
+    chome_banchi_gou = match.group(2).strip().split('-')
+
+    address_splited = dict(location_base="", chome="", banchi="", gou="")
     address_splited['location_base'] = match.group(1).strip()
-    address_splited['chome'] = match.group(2).strip()
-    address_splited['banchi'] = '6'
-    address_splited['gou'] = '7'
+    if len(chome_banchi_gou) > 0:
+        address_splited['chome'] = chome_banchi_gou[0]
+    if len(chome_banchi_gou) > 1:
+        address_splited['banchi'] = chome_banchi_gou[1]
+    if len(chome_banchi_gou) > 2:
+        address_splited['gou'] = chome_banchi_gou[2]
 
     return address_splited
 

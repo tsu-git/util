@@ -2,7 +2,8 @@
 
     住所文字列の解析、分割を行う。
 '''
-import re, doctest
+import re
+
 
 def __test_print(*strings, sep="/"):
     '''__test_print()
@@ -65,11 +66,16 @@ def normalize_address(address_str):
     # 全角ハイフン（例: "ー", "―", "−"）を半角ハイフンに変換
     #   ただし、直前の文字がカタカナに該当しない場合のみ
     #   (?<!...)（否定の先読み）
-    address_converted = re.sub(r'(?<![ァ-ヶ])[－ー―−]', '-', address_converted)
+    address_converted = re.sub(
+        r'(?<![ァ-ヶ])[－ー―−]', '-', address_converted)
 
     # 全角数字を半角に変換
     # TODO: 漢数字の対応を検討する
-    address_converted = re.sub(r'[０-９]', lambda x: chr(ord(x.group(0)) - 0xFEE0), address_converted)
+    address_converted = re.sub(
+        r'[０-９]',
+        lambda x: chr(ord(x.group(0)) - 0xFEE0),
+        address_converted
+    )
 
     # 丁目を半角ハイフンに変換
     address_converted = re.sub(r'丁目', '-', address_converted)
@@ -80,9 +86,10 @@ def normalize_address(address_str):
 
     return address_converted
 
-def split_address(address_str)-> dict:
+
+def split_address(address_str) -> dict:
     '''split_address()
-        
+
         引数の住所文字列を住所部分と建物名に分離する。
             - 番地号の後ろに続く建物名を分離する。
 
@@ -168,15 +175,14 @@ def split_address(address_str)-> dict:
         安芸市本町3-1
         >>> print(f"[{addr_dict['building']}]")
         []
-        
+
         >>> addr_dict = split_address("安芸市本町5")
         >>> print(addr_dict['address'])
         安芸市本町5
         >>> print(f"[{addr_dict['building']}]")
         []
-        
+
     '''
-    #address_witout_building = address_str.split()[0]
 
     # 丁目や番地号の形式にマッチする正規表現
     #   (?:...)非補足グループ：パターンでグループ化するだけで、後で参照
@@ -205,7 +211,7 @@ def split_address(address_str)-> dict:
         }
 
 
-def parse_chome_and_banchi(address_str)-> dict:
+def parse_chome_and_banchi(address_str) -> dict:
     '''parse_chome_and_banch()
 
         丁目番地号を分割する。
@@ -246,14 +252,6 @@ def parse_chome_and_banchi(address_str)-> dict:
     # 丁目や番地号の形式にマッチする正規表現
     #   (?:...)非補足グループ：パターンでグループ化するだけで、後で参照
     #   しない。ここでは番地号のパターン（-n-n）を表す。
-    #pattern = re.compile(r'''
-    #   (.*?)                # 丁目より前（非貪欲マッチ）
-    #       (\d+?)           # 丁目
-    #       -?               # 区切り文字
-    #       (\d*?)           # 住所部分 番地号
-    #       -?               # 区切り文字
-    #       (\d*?)          # 住所部分 番地号
-    #    ''', re.VERBOSE)
     pattern = re.compile(r'''
         (.*?)               # 住所部分 丁目より前（非貪欲マッチ）
             (\d+            # 住所部分 丁目
@@ -273,6 +271,7 @@ def parse_chome_and_banchi(address_str)-> dict:
         address_splited['gou'] = chome_banchi_gou[2]
 
     return address_splited
+
 
 def remove_extra_after_prefix():
     '''remove_extra_after_prefix

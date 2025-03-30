@@ -114,72 +114,72 @@ def split_address(address_str) -> dict:
         ...     "高知県須崎市鍋島５－８−９　スプリングパレス２０１号"
         ... ]
         >>> addr_dict = split_address(address_strs[0])
-        >>> print(addr_dict['address'])
-        高知県高知市本町1-1-1
-        >>> print(addr_dict['building'])
-        サンライズビル301号室
+        >>> __test_print(addr_dict['address'])
+        [高知県高知市本町1-1-1]
+        >>> __test_print(addr_dict['building'])
+        [サンライズビル301号室]
 
         >>> addr_dict = split_address(address_strs[1])
-        >>> print(addr_dict['address'])
-        高知県南国市後免町2-2-2
-        >>> print(addr_dict['building'])
-        グリーンハイツＡ棟
+        >>> __test_print(addr_dict['address'])
+        [高知県南国市後免町2-2-2]
+        >>> __test_print(addr_dict['building'])
+        [グリーンハイツＡ棟]
 
         >>> addr_dict = split_address(address_strs[2])
-        >>> print(addr_dict['address'])
-        高知県四万十市中村一条3-4-5
-        >>> print(addr_dict['building'])
-        コスモタワー1001号室
+        >>> __test_print(addr_dict['address'])
+        [高知県四万十市中村一条3-4-5]
+        >>> __test_print(addr_dict['building'])
+        [コスモタワー1001号室]
 
         >>> addr_dict = split_address(address_strs[3])
-        >>> print(addr_dict['address'])
-        高知県安芸市本町4-6-7
-        >>> print(addr_dict['building'])
-        さざなみマンション502号室
+        >>> __test_print(addr_dict['address'])
+        [高知県安芸市本町4-6-7]
+        >>> __test_print(addr_dict['building'])
+        [さざなみマンション502号室]
 
         >>> addr_dict = split_address(address_strs[4])
-        >>> print(addr_dict['address'])
-        高知県須崎市鍋島5-8-9
-        >>> print(addr_dict['building'])
-        スプリングパレス201号
+        >>> __test_print(addr_dict['address'])
+        [高知県須崎市鍋島5-8-9]
+        >>> __test_print(addr_dict['building'])
+        [スプリングパレス201号]
 
 
             - 丁目、番地号が1つ以上ある場合に対応
 
         >>> addr_dict = split_address("安芸市本町4-6-7建物名Ａ")
-        >>> print(addr_dict['address'])
-        安芸市本町4-6-7
-        >>> print(addr_dict['building'])
-        建物名Ａ
+        >>> __test_print(addr_dict['address'])
+        [安芸市本町4-6-7]
+        >>> __test_print(addr_dict['building'])
+        [建物名Ａ]
 
         >>> addr_dict = split_address("安芸市本町4-5建物名Ｂ")
-        >>> print(addr_dict['address'])
-        安芸市本町4-5
-        >>> print(addr_dict['building'])
-        建物名Ｂ
+        >>> __test_print(addr_dict['address'])
+        [安芸市本町4-5]
+        >>> __test_print(addr_dict['building'])
+        [建物名Ｂ]
 
         >>> addr_dict = split_address("安芸市本町2建物名Ｃ")
-        >>> print(addr_dict['address'])
-        安芸市本町2
-        >>> print(addr_dict['building'])
-        建物名Ｃ
+        >>> __test_print(addr_dict['address'])
+        [安芸市本町2]
+        >>> __test_print(addr_dict['building'])
+        [建物名Ｃ]
 
         >>> addr_dict = split_address("安芸市本町4-5-3")
-        >>> print(addr_dict['address'])
-        安芸市本町4-5-3
-        >>> print(f"[{addr_dict['building']}]")
+        >>> __test_print(addr_dict['address'])
+        [安芸市本町4-5-3]
+        >>> __test_print(addr_dict['building'])
         []
 
         >>> addr_dict = split_address("安芸市本町3-1")
-        >>> print(addr_dict['address'])
-        安芸市本町3-1
-        >>> print(f"[{addr_dict['building']}]")
+        >>> __test_print(addr_dict['address'])
+        [安芸市本町3-1]
+        >>> __test_print(addr_dict['building'])
         []
 
         >>> addr_dict = split_address("安芸市本町5")
-        >>> print(addr_dict['address'])
-        安芸市本町5
-        >>> print(f"[{addr_dict['building']}]")
+        >>> __test_print(addr_dict['address'])
+        [安芸市本町5]
+        >>> __test_print(addr_dict['building'])
         []
 
     '''

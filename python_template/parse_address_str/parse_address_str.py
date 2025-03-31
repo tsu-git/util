@@ -3,6 +3,7 @@
     住所文字列の解析、分割を行う。
 '''
 import re, shelve
+from pathlib import Path
 
 
 def __test_print(*strings, sep="/"):
@@ -54,10 +55,15 @@ def normalize_address(address_str):
         ...
         ...     # 番地号と建物名の間に全角スペースあり、全角ハイフンを複数
         ...     # 種類使用
-        ...     "高知県須崎市鍋島５－８−９　スプリングパレス２０１号"
+        ...     "高知県須崎市鍋島５－８−９　スプリングパレス２０１号",
+        ...
+        ...     # 丁目番地号
+        ...     "高知県須崎市鍋島５丁目８番地９号　スプリングパレス２０１号"
         ... ]
         >>> print(normalize_address(address_strs[0]))
         高知県高知市本町1-1-1 サンライズビル301号室
+        >>> print(normalize_address(address_strs[5]))
+        高知県須崎市鍋島5-8-9 スプリングパレス201号
     '''
 
     # 全角スペースを半角スペースに変換
@@ -80,9 +86,13 @@ def normalize_address(address_str):
     # 丁目を半角ハイフンに変換
     address_converted = re.sub(r'丁目', '-', address_converted)
     # 番、番地を半角ハイフンに変換
-    address_converted = re.sub(r'(番|番地)', '-', address_converted)
+    address_converted = re.sub(r'(-\d+)番地(\d)', r'\1-\2', address_converted)
+    address_converted = re.sub(r'(-\d+)番(\d)', r'\1-\2', address_converted)
+    # 番、番地で終わる場合は「番」「番地」を除去する
+    address_converted = re.sub(r'(-\d+)番地$', r'\1', address_converted)
+    address_converted = re.sub(r'(-\d+)番$', r'\1', address_converted)
     # ハイフン＋数字＋号の「号」を除去する
-    address_converted = re.sub(r'-\d+(号)', '', address_converted)
+    address_converted = re.sub(r'(-\d+)号', r'\1', address_converted)
 
     return address_converted
 
@@ -179,6 +189,13 @@ def split_address(address_str) -> dict:
         >>> addr_dict = split_address("安芸市本町5")
         >>> __test_print(addr_dict['address'])
         [安芸市本町5]
+        >>> __test_print(addr_dict['building'])
+        []
+
+        >>> target_address = '広島県尾道市因島土生町中央区１７７－３２番'
+        >>> addr_dict = split_address(target_address)
+        >>> __test_print(addr_dict['address'])
+        [広島県尾道市因島土生町中央区177-32]
         >>> __test_print(addr_dict['building'])
         []
 
@@ -348,7 +365,7 @@ def __get_prefixes_from_file(address_prefix_file: str) -> set:
     return prefixes
 
 
-def remove_extra_after_prefix(target_address: str, address_prefixes: str):
+def remove_extra_after_prefix(target_address: str):
     '''remove_extra_after_prefix
 
         指定された住所文字列（prefix）より後ろの余計な部分を削除する
@@ -360,25 +377,40 @@ def remove_extra_after_prefix(target_address: str, address_prefixes: str):
         ...     '広島県尾道市西藤町',
         ...     '広島県尾道市高須町'
         ... ])
-        >>> processed_addr = remove_extra_after_prefix(target_address,
-        ...                 address_prefixes)
-        >>> print(processed_addr)
-        広島県尾道市因島土生町177-32
+        >>> processed_addr = remove_extra_after_prefix(target_address)
+        >>> __test_print(processed_addr)
+        [広島県尾道市因島土生町177-32]
 
     '''
-#    # 指定住所一覧ファイルから指定住所を読み込む
-#    p = Path('./addr_prefs')
-#    if p.exists() is False:
-#        # キャッシュファイルがない場合は、ファイルから読み込む
-#        __get_prefixes_from_file(address_prefixes)
-#    else:
-#        # キャッシュファイルが存在する場合は、キャッシュから読み込む
-#        with shelve.oepn(p, 'r') as shelf_f:
-#            addr_prefs = shelf_f['addr_prefs']
+    # 指定住所一覧ファイルから指定住所を読み込む
+    p = Path('./addr_prefs')
+    if p.exists() is False:
+        # キャッシュファイルがない場合は、ファイルから読み込む
+        __get_prefixes_from_file(address_prefixes)
+    else:
+        # キャッシュファイルが存在する場合は、キャッシュから読み込む
+        with shelve.open(p.name, 'r') as shelf_f:
+            addr_prefs = shelf_f['addr_prefs']
 
+    # 住所と建物名を分離する
     addr_dict = split_address(target_address)
-    #for pref in 
-    #if addr_dict['location_base'].startswith(pref):
-    processed_addr = "広島県尾道市因島土生町177-32"
+
+    # 住所から丁目番地号を分離する
+    parsed_address = parse_chome_and_banchi(addr_dict['address'])
+
+    for pref in addr_prefs:
+        if parsed_address['location_base'].startswith(pref):
+            break
+    
+    # 指定住所文字列＋丁目番地号＋建物名
+    processed_addr = pref
+    if len(parsed_address['chome']) > 0:
+        processed_addr += f"{parsed_address['chome']}"
+    if len(parsed_address['banchi']) > 0:
+        processed_addr += f"-{parsed_address['banchi']}"
+    if len(parsed_address['gou']) > 0:
+        processed_addr += f"-{parsed_address['gou']}"
+    if len(addr_dict['building']) > 0:
+        processed_addr += f" {addr_dict['building']}"
 
     return processed_addr

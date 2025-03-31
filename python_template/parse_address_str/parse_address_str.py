@@ -193,10 +193,9 @@ def split_address(address_str) -> dict:
             (?:-\d+){0,2})  # 住所部分 番地号（あれば）
         (.*)                # 建物部分
         ''', re.VERBOSE)
-    match = re.match(pattern, normalize_address(address_str))
 
-    # ディクショナリ形式で返却する
-    if match:
+    if match := re.match(pattern, normalize_address(address_str)):
+        # ディクショナリ形式で返却する
         return {
             # 住所部分
             'address': match.group(1).strip(),
@@ -245,6 +244,15 @@ def parse_chome_and_banchi(address_str) -> dict:
         ...             addr_dict['gou'])
         [3//]
 
+        >>> address_without_bld_name = "高知県四万十市中村一条"
+        >>> addr_dict = ""
+        >>> addr_dict = parse_chome_and_banchi(address_without_bld_name)
+        >>> __test_print(addr_dict['location_base'])
+        [高知県四万十市中村一条]
+        >>> __test_print(addr_dict['chome'], addr_dict['banchi'],
+        ...             addr_dict['gou'])
+        [//]
+
     '''
 
     # TODO: 住所の各要素を分解して格納する（実装中）
@@ -258,10 +266,16 @@ def parse_chome_and_banchi(address_str) -> dict:
             (-\d+){0,2})    # 住所部分 番地号（あれば）
         ''', re.VERBOSE)
 
+    address_splited = dict(location_base="", chome="", banchi="", gou="")
+
     match = re.match(pattern, address_str)
+    if match is None:
+        # マッチしない場合は、引数文字列をそのまま返却する。
+        address_splited['location_base'] = address_str
+        return address_splited
+
     chome_banchi_gou = match.group(2).strip().split('-')
 
-    address_splited = dict(location_base="", chome="", banchi="", gou="")
     address_splited['location_base'] = match.group(1).strip()
     if len(chome_banchi_gou) > 0:
         address_splited['chome'] = chome_banchi_gou[0]

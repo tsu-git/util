@@ -2,7 +2,7 @@
 
     住所文字列の解析、分割を行う。
 '''
-import re
+import re, shelve
 
 
 def __test_print(*strings, sep="/"):
@@ -287,10 +287,98 @@ def parse_chome_and_banchi(address_str) -> dict:
     return address_splited
 
 
-def remove_extra_after_prefix():
+def __test_create_address_prefix_file(test_addresses_file):
+    '''__test_create_address_prefix_file
+
+        テスト用に指定住所文字列を書き込んだファイルを作成する。
+
+        >>> addr_file = "./test_addresses.txt"
+        >>> __test_create_address_prefix_file(addr_file)
+        >>> with open(addr_file, 'r') as f:
+        ...     for line in f:
+        ...         print(line, end="")
+        広島県尾道市因島中庄町
+        広島県尾道市因島土生町
+        広島県尾道市西藤町
+        広島県尾道市高須町
+
+    '''
+    addresses = [
+        '広島県尾道市因島中庄町',
+        '広島県尾道市因島土生町',
+        '広島県尾道市西藤町',
+        '広島県尾道市高須町'
+    ]
+    with open(test_addresses_file, 'w') as f:
+        for line in addresses:
+            f.write(f'{line}\n')
+
+    return
+
+def __get_prefixes_from_file(address_prefix_file: str) -> set:
+    '''__get_prefixes_from_file
+
+        指定住所文字列をファイルから取得する。読み込んだデータは空白を
+        取り除き、重複排除して返却する。
+        また、このデータはバイナリ形式でファイルに保存する。
+
+        >>> addr_file = "./test_addresses.txt"
+        >>> __test_create_address_prefix_file(addr_file)
+        >>> prefs = __get_prefixes_from_file(addr_file)
+        >>> '広島県尾道市西藤町' in prefs
+        True
+        >>> '広島県尾道市因島中庄町' in prefs
+        True
+        >>> '高知県高知市' in prefs
+        False
+    '''
+    tmp_list = list()
+
+    # 指定住所一覧ファイルを読み込む
+    with open(address_prefix_file, 'r') as f:
+        for line in f:
+            tmp_list.append(line.strip())
+
+    prefixes = set(tmp_list)
+
+    # キャッシュファイルに書き込む
+    with shelve.open('./addr_prefs', 'c') as shelf_f:
+        shelf_f['addr_prefs'] = prefixes
+
+    return prefixes
+
+
+def remove_extra_after_prefix(target_address: str, address_prefixes: str):
     '''remove_extra_after_prefix
 
         指定された住所文字列（prefix）より後ろの余計な部分を削除する
-    '''
 
-    return
+        >>> target_address = '広島県尾道市因島土生町中央区１７７－３２番'
+        >>> address_prefixes = set([
+        ...     '広島県尾道市因島中庄町',
+        ...     '広島県尾道市因島土生町',
+        ...     '広島県尾道市西藤町',
+        ...     '広島県尾道市高須町'
+        ... ])
+        >>> processed_addr = remove_extra_after_prefix(target_address,
+        ...                 address_prefixes)
+        >>> print(processed_addr)
+        広島県尾道市因島土生町177-32
+
+    '''
+#    # 指定住所一覧ファイルから指定住所を読み込む
+#    p = Path('./addr_prefs')
+#    if p.exists() is False:
+#        # キャッシュファイルがない場合は、ファイルから読み込む
+#        __get_prefixes_from_file(address_prefixes)
+#    else:
+#        # キャッシュファイルが存在する場合は、キャッシュから読み込む
+#        with shelve.oepn(p, 'r') as shelf_f:
+#            addr_prefs = shelf_f['addr_prefs']
+
+    addr_dict = split_address(target_address)
+    #for pref in 
+    #if addr_dict['location_base'].startswith(pref):
+    processed_addr = "広島県尾道市因島土生町177-32"
+
+    return processed_addr

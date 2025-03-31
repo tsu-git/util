@@ -371,15 +371,18 @@ def remove_extra_after_prefix(target_address: str):
         指定された住所文字列（prefix）より後ろの余計な部分を削除する
 
         >>> target_address = '広島県尾道市因島土生町中央区１７７－３２番'
-        >>> address_prefixes = set([
-        ...     '広島県尾道市因島中庄町',
-        ...     '広島県尾道市因島土生町',
-        ...     '広島県尾道市西藤町',
-        ...     '広島県尾道市高須町'
-        ... ])
         >>> processed_addr = remove_extra_after_prefix(target_address)
         >>> __test_print(processed_addr)
         [広島県尾道市因島土生町177-32]
+        >>> target_address = '広島県尾道市因島土生町中央区１７７－３２しあわせ荘1'
+        >>> processed_addr = remove_extra_after_prefix(target_address)
+        >>> __test_print(processed_addr)
+        [広島県尾道市因島土生町177-32 しあわせ荘1]
+
+        >>> target_address = '広島県安芸市１７７－３２しあわせ荘1'
+        >>> processed_addr = remove_extra_after_prefix(target_address)
+        >>> __test_print(processed_addr)
+        [広島県安芸市177-32 しあわせ荘1]
 
     '''
     # 指定住所一覧ファイルから指定住所を読み込む
@@ -401,6 +404,8 @@ def remove_extra_after_prefix(target_address: str):
     for pref in addr_prefs:
         if parsed_address['location_base'].startswith(pref):
             break
+        else:
+            pref = parsed_address['location_base']
     
     # 指定住所文字列＋丁目番地号＋建物名
     processed_addr = pref

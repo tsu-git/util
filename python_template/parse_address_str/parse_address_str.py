@@ -58,12 +58,31 @@ def normalize_address(address_str):
         ...     "高知県須崎市鍋島５－８−９　スプリングパレス２０１号",
         ...
         ...     # 丁目番地号
-        ...     "高知県須崎市鍋島５丁目８番地９号　スプリングパレス２０１号"
+        ...     "高知県須崎市鍋島５丁目８番地９号　スプリングパレス２０１号",
+        ...
+        ...     # 番地号
+        ...     "広島県尾道市西藤町字合六１７９番１１",
+        ...
+        ...     # 番地
+        ...     "広島県尾道市西藤町字合六１７９番",
+        ...
+        ...     # 建物名に「番」
+        ...     "広島県尾道市西藤町字合六１７９番１１パレス２番館"
         ... ]
         >>> print(normalize_address(address_strs[0]))
         高知県高知市本町1-1-1 サンライズビル301号室
+
         >>> print(normalize_address(address_strs[5]))
         高知県須崎市鍋島5-8-9 スプリングパレス201号
+
+        >>> print(normalize_address(address_strs[6]))
+        広島県尾道市西藤町字合六179-11
+
+        >>> print(normalize_address(address_strs[7]))
+        広島県尾道市西藤町字合六179
+
+        >>> print(normalize_address(address_strs[8]))
+        広島県尾道市西藤町字合六179-11パレス2番館
     '''
 
     # 全角スペースを半角スペースに変換
@@ -86,11 +105,11 @@ def normalize_address(address_str):
     # 丁目を半角ハイフンに変換
     address_converted = re.sub(r'丁目', '-', address_converted)
     # 番、番地を半角ハイフンに変換
-    address_converted = re.sub(r'(-\d+)番地(\d)', r'\1-\2', address_converted)
-    address_converted = re.sub(r'(-\d+)番(\d)', r'\1-\2', address_converted)
+    address_converted = re.sub(r'(-?\d+)番地(\d)', r'\1-\2', address_converted)
+    address_converted = re.sub(r'(-?\d+)番(\d)', r'\1-\2', address_converted)
     # 番、番地で終わる場合は「番」「番地」を除去する
-    address_converted = re.sub(r'(-\d+)番地$', r'\1', address_converted)
-    address_converted = re.sub(r'(-\d+)番$', r'\1', address_converted)
+    address_converted = re.sub(r'(-?\d+)番地$', r'\1', address_converted)
+    address_converted = re.sub(r'(-?\d+)番$', r'\1', address_converted)
     # ハイフン＋数字＋号の「号」を除去する
     address_converted = re.sub(r'(-\d+)号', r'\1', address_converted)
 
@@ -352,7 +371,7 @@ def __get_prefixes_from_file(address_prefix_file: str) -> set:
     tmp_list = list()
 
     # 指定住所一覧ファイルを読み込む
-    with open(address_prefix_file, 'r') as f:
+    with open(address_prefix_file, 'r', encoding="utf-8") as f:
         for line in f:
             tmp_list.append(line.strip())
 
@@ -370,10 +389,16 @@ def remove_extra_after_prefix(target_address: str):
 
         指定された住所文字列（prefix）より後ろの余計な部分を削除する
 
+        >>> target_address = '広島県尾道市因島中庄町油屋新開４８１５－１'
+        >>> processed_addr = remove_extra_after_prefix(target_address)
+        >>> __test_print(processed_addr)
+        [広島県尾道市因島中庄町4815-1]
+
         >>> target_address = '広島県尾道市因島土生町中央区１７７－３２番'
         >>> processed_addr = remove_extra_after_prefix(target_address)
         >>> __test_print(processed_addr)
         [広島県尾道市因島土生町177-32]
+
         >>> target_address = '広島県尾道市因島土生町中央区１７７－３２しあわせ荘1'
         >>> processed_addr = remove_extra_after_prefix(target_address)
         >>> __test_print(processed_addr)
@@ -386,13 +411,17 @@ def remove_extra_after_prefix(target_address: str):
 
     '''
     # 指定住所一覧ファイルから指定住所を読み込む
-    p = Path('./addr_prefs')
-    if p.exists() is False:
+    p_addr_prefs_text = Path('./address_prefixes.txt')
+    p_addr_prefs_cache = Path('./addr_prefs')
+    if p_addr_prefs_text.exists() is False:
+        # 指定住所一覧ファイルがない場合、終了する
+        return False
+    if p_addr_prefs_cache.exists() is False:
         # キャッシュファイルがない場合は、ファイルから読み込む
-        __get_prefixes_from_file(address_prefixes)
+        __get_prefixes_from_file(p_addr_prefs_text)
     else:
         # キャッシュファイルが存在する場合は、キャッシュから読み込む
-        with shelve.open(p.name, 'r') as shelf_f:
+        with shelve.open(p_addr_prefs_cache.name, 'r') as shelf_f:
             addr_prefs = shelf_f['addr_prefs']
 
     # 住所と建物名を分離する
@@ -401,14 +430,16 @@ def remove_extra_after_prefix(target_address: str):
     # 住所から丁目番地号を分離する
     parsed_address = parse_chome_and_banchi(addr_dict['address'])
 
+    
+    pref_matched = parsed_address['location_base']
     for pref in addr_prefs:
-        if parsed_address['location_base'].startswith(pref):
-            break
+        if parsed_address['location_base'].startswith(pref) is False:
+            continue
         else:
-            pref = parsed_address['location_base']
+            pref_matched = pref
     
     # 指定住所文字列＋丁目番地号＋建物名
-    processed_addr = pref
+    processed_addr = pref_matched
     if len(parsed_address['chome']) > 0:
         processed_addr += f"{parsed_address['chome']}"
     if len(parsed_address['banchi']) > 0:

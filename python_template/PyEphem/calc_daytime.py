@@ -4,8 +4,13 @@ import pandas as pd
 import ephem
 
 '''
-    日の出、日の入り時刻の数列を作成してみる。
+    日の出、日の入り時刻の数列を作成する。
 '''
+
+# TODO: 日付のSeriesを作成する
+# TODO: 日の出、日の入りのSeriesを作成する
+# TODO: 日付のSeriesをインデックスとするDataFrameに日の出、日の入り時間を
+#       追加する
 
 if __name__ == "__main__":
     Tokyo = ephem.Observer()
